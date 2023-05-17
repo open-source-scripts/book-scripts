@@ -1,0 +1,19 @@
+{
+  "author": "Open Book Source",
+  "homepage": "https://github.com/open-book-source/booksource",
+  "sources": [
+    {
+      "format": "javascript",
+      "name": "17K小说网",
+      "domain": "17k.com",
+      "description": "一起看免费小说",
+      "version": "1.0.0"
+    },
+    {
+      "format": "javascript",
+      "name": "纵横中文网",
+      "domain": "zongheng.com",
+      "version": "1.0.0"
+    }
+  ]
+}
