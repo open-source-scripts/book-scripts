@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "lib": [
+      "ES5",
+      "ES6"
+    ],
+    "typeRoots": [
+      "./declarations"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    ".bak",
+    ".test"
+  ]
+}

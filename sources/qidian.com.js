@@ -1,6 +1,6 @@
 // ==UserScript==
+// @status        obsolete
 // @name          起点中文网
-// @name:zh-CN    起点中文网
 // @domain        qidian.com
 // @require       https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/crypto-js/4.1.1/crypto-js.min.js
 // @version       1.0.0

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name:zh-CN    纵横中文网
+// @name          纵横中文网
 // @domain        zongheng.com
 // @description   上纵横小说, 看大神之作
 // @version       1.0.0
