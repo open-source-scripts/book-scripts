@@ -2,7 +2,7 @@
 // @name          番茄小说网
 // @description   感谢 https://github.com/fengyuecanzhu/FQWeb 项目
 // @domain        fanqienovel.com
-// @version       1.0.0
+// @version       1.0.1
 // @icon          https://p1-tt.byteimg.com/origin/novel-static/a3621391ca2e537045168afda6722ee9
 // @supportURL    https://github.com/open-book-source/booksource/issues
 // @function      categories
@@ -121,16 +121,13 @@ async function chapter(bid, cid) {
     return { code: response.status, message: 'Network error!' };
   }
   let $ = JSON.parse(response.data);
-  if (!$.isSuccess) {
-    return { code: 1, message: `${$.errorMsg}` };
-  }
-  if ($.data.code !== '0') {
-    return { code: 2, message: `${$.data.message}(${$.data.code})` };
+  if ($.code != 0) {
+    return { code: 1, message: `${$.message}` };
   }
   return {
     data: {
       finalUrl: response.finalUrl,
-      body: $.data.data.content,
+      body: $.data.content,
     },
   };
 }
