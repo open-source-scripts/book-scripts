@@ -2,7 +2,7 @@
 // @name          番茄小说网
 // @description   感谢 https://github.com/fengyuecanzhu/FQWeb 项目
 // @domain        fanqienovel.com
-// @version       1.0.1
+// @version       1.0.2
 // @icon          https://p1-tt.byteimg.com/origin/novel-static/a3621391ca2e537045168afda6722ee9
 // @supportURL    https://github.com/open-book-source/booksource/issues
 // @function      categories
@@ -16,120 +16,6 @@ const host = `http://list.fqapi.jilulu.cn`;
 
 function _convertStatus(status) {
   return status === '0' ? 1 : status === '1' ? 0 : status === '4' ? 2 : undefined
-}
-
-// 搜索
-async function search(keyword, opaque) {
-  let page = opaque ? opaque.page : 1;
-  let response = await fetch(`${host}/search?query=${keyword}&page=${page}`)
-  if (response.status !== 200) {
-    return { code: response.status, message: 'Network error!' };
-  }
-  let $ = JSON.parse(response.data);
-  if (!$.isSuccess) {
-    return { code: 1, message: `${$.errorMsg}` };
-  }
-  if ($.data.code !== '0') {
-    return { code: 2, message: `${$.data.message}(${$.data.code})` };
-  }
-  let array = [];
-  let tab = $.data.search_tabs[0];
-  if (tab) {
-    for (let i = 0; i < tab.data.length; i++) {
-      let data = tab.data[i];
-      let bookData = data.book_data;
-      if (!bookData) continue;
-      let item = bookData[0];
-      array.push({
-        id: item.book_id,
-        name: item.book_name,
-        author: item.author,
-        intro: item.abstract,
-        cover: item.thumb_url,
-        words: parseInt(item.word_number),
-        category: item.category,
-        updateTime: item.last_publish_time * 1000,
-        status: _convertStatus(item.creation_status),
-      });
-    }
-  }
-  return {
-    data: {
-      data: array,
-    },
-  };
-}
-
-// 详情
-async function detail(id) {
-  let response = await fetch(`${host}/info?book_id=${id}`);
-  if (response.status !== 200) {
-    return { code: response.status, message: 'Network error!' };
-  }
-  let $ = JSON.parse(response.data);
-  if (!$.isSuccess) {
-    return { code: 1, message: `${$.errorMsg}` };
-  }
-  if ($.data.code !== '0') {
-    return { code: 2, message: `${$.data.message}(${$.data.code})` };
-  }
-  let item = $.data.data;
-  return {
-    data: {
-      id: item.book_id,
-      name: item.book_name,
-      author: item.author,
-      authorId: item.author_info.user_id,
-      intro: item.abstract,
-      cover: item.thumb_url,
-      words: parseInt(item.word_number),
-      updateTime: item.last_publish_time * 1000,
-      lastChapterName: item.last_chapter_title,
-      category: item.category,
-      status: _convertStatus(item.creation_status),
-    }
-  };
-}
-
-// 目录
-async function toc(id) {
-  let response = await fetch(`${host}/catalog?book_id=${id}`);
-  if (response.status !== 200) {
-    return { code: response.status, message: 'Network error!' };
-  }
-  let $ = JSON.parse(response.data);
-  if (!$.isSuccess) {
-    return { code: 1, message: `${$.errorMsg}` };
-  }
-  if ($.data.code !== '0') {
-    return { code: 2, message: `${$.data.message}(${$.data.code})` };
-  }
-  return {
-    data: $.data.data.item_data_list.map((e) => {
-      return {
-        id: e.item_id,
-        name: e.title,
-      };
-    }),
-  };
-}
-
-// 章节
-async function chapter(bid, cid) {
-  let response = await fetch(`${host}/content?item_id=${cid}`);
-  if (response.status !== 200) {
-    return { code: response.status, message: 'Network error!' };
-  }
-  let $ = JSON.parse(response.data);
-  if ($.code != 0) {
-    return { code: 1, message: `${$.message}` };
-  }
-  return {
-    data: {
-      finalUrl: response.finalUrl,
-      body: $.data.content,
-    },
-  };
 }
 
 const _sub_categories = {
@@ -181,15 +67,24 @@ async function category(categories, opaque) {
     return { code: response.status, message: 'Network error!' };
   }
   let $ = JSON.parse(response.data);
-  if (!$.isSuccess) {
-    return { code: 1, message: `${$.errorMsg}` };
-  }
-  if ($.data.code !== '0') {
-    return { code: 2, message: `${$.data.message}(${$.data.code})` };
+  let data;
+  if (typeof $.isSuccess === 'undefined') {
+    if ($.code !== 0) {
+      return { code: 1, message: `${$.message}(${$.code})` };
+    }
+    data = $.data;
+  } else {
+    if (!$.isSuccess) {
+      return { code: 1, message: `${$.errorMsg}` };
+    }
+    if ($.data.code !== '0') {
+      return { code: 1, message: `${$.data.message}(${$.data.code})` };
+    }
+    data = $.data.data;
   }
   return {
     data: {
-      data: $.data.data.cell_view.book_data.map((e) => {
+      data: data.cell_view.book_data.map((e) => {
         return {
           id: e.book_id,
           name: e.book_name,
@@ -202,6 +97,157 @@ async function category(categories, opaque) {
           status: _convertStatus(e.creation_status),
         };
       }),
+    },
+  };
+}
+
+// 搜索
+async function search(keyword, opaque) {
+  let page = opaque ? opaque.page : 1;
+  let response = await fetch(`${host}/search?query=${keyword}&page=${page}`)
+  if (response.status !== 200) {
+    return { code: response.status, message: 'Network error!' };
+  }
+  let $ = JSON.parse(response.data);
+  let tab;
+  if (typeof $.isSuccess === 'undefined') {
+    if ($.code !== 0) {
+      return { code: 1, message: `${$.message}(${$.code})` };
+    }
+    tab = $.search_tabs[0];
+  } else {
+    if (!$.isSuccess) {
+      return { code: 1, message: `${$.errorMsg}` };
+    }
+    if ($.data.code !== '0') {
+      return { code: 1, message: `${$.data.message}(${$.data.code})` };
+    }
+    tab = $.data.search_tabs[0];
+  }
+  let array = [];
+  if (tab) {
+    for (let i = 0; i < tab.data.length; i++) {
+      let data = tab.data[i];
+      let bookData = data.book_data;
+      if (!bookData) continue;
+      let item = bookData[0];
+      array.push({
+        id: item.book_id,
+        name: item.book_name,
+        author: item.author,
+        intro: item.abstract,
+        cover: item.thumb_url,
+        words: parseInt(item.word_number),
+        category: item.category,
+        updateTime: item.last_publish_time * 1000,
+        status: _convertStatus(item.creation_status),
+      });
+    }
+  }
+  return {
+    data: {
+      data: array,
+    },
+  };
+}
+
+// 详情
+async function detail(id) {
+  let response = await fetch(`${host}/info?book_id=${id}`);
+  if (response.status !== 200) {
+    return { code: response.status, message: 'Network error!' };
+  }
+  let $ = JSON.parse(response.data);
+  let data;
+  if (typeof $.isSuccess === 'undefined') {
+    if ($.code !== 0) {
+      return { code: 1, message: `${$.message}(${$.code})` };
+    }
+    data = $.data;
+  } else {
+    if (!$.isSuccess) {
+      return { code: 1, message: `${$.errorMsg}` };
+    }
+    if ($.data.code !== '0') {
+      return { code: 1, message: `${$.data.message}(${$.data.code})` };
+    }
+    data = $.data.data;
+  }
+  return {
+    data: {
+      id: data.book_id,
+      name: data.book_name,
+      author: data.author,
+      authorId: data.author_info.user_id,
+      intro: data.abstract,
+      cover: data.thumb_url,
+      words: parseInt(data.word_number),
+      updateTime: data.last_publish_time * 1000,
+      lastChapterName: data.last_chapter_title,
+      category: data.category,
+      status: _convertStatus(data.creation_status),
+    }
+  };
+}
+
+// 目录
+async function toc(id) {
+  let response = await fetch(`${host}/catalog?book_id=${id}`);
+  if (response.status !== 200) {
+    return { code: response.status, message: 'Network error!' };
+  }
+  let $ = JSON.parse(response.data);
+  let data;
+  if (typeof $.isSuccess === 'undefined') {
+    if ($.code !== 0) {
+      return { code: 1, message: `${$.message}(${$.code})` };
+    }
+    data = $.data;
+  } else {
+    if (!$.isSuccess) {
+      return { code: 1, message: `${$.errorMsg}` };
+    }
+    if ($.data.code !== '0') {
+      return { code: 1, message: `${$.data.message}(${$.data.code})` };
+    }
+    data = $.data.data;
+  }
+  return {
+    data: data.item_data_list.map((e) => {
+      return {
+        id: e.item_id,
+        name: e.title,
+      };
+    }),
+  };
+}
+
+// 章节
+async function chapter(bid, cid) {
+  let response = await fetch(`${host}/content?item_id=${cid}`);
+  if (response.status !== 200) {
+    return { code: response.status, message: 'Network error!' };
+  }
+  let $ = JSON.parse(response.data);
+  let data;
+  if (typeof $.isSuccess === 'undefined') {
+    if ($.code !== 0) {
+      return { code: 1, message: `${$.message}(${$.code})` };
+    }
+    data = $.data;
+  } else {
+    if (!$.isSuccess) {
+      return { code: 1, message: `${$.errorMsg}` };
+    }
+    if ($.data.code !== '0') {
+      return { code: 1, message: `${$.data.message}(${$.data.code})` };
+    }
+    data = $.data.data;
+  }
+  return {
+    data: {
+      finalUrl: response.finalUrl,
+      body: data.content,
     },
   };
 }
