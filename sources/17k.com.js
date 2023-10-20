@@ -2,7 +2,7 @@
 // @name          17K小说网
 // @domain        17k.com
 // @description   一起看小说
-// @version       1.0.0
+// @version       1.0.1
 // @icon          https://www.17k.com/favicon.ico
 // @supportURL    https://github.com/open-book-source/booksource/issues
 // @function      categories
@@ -275,7 +275,7 @@ async function category(categories, opaque) {
 // 授权
 async function authorization() {
   // 网页登录
-  let response = await UI.authorization(0, 'https://h5.17k.com/passport', 'https://17k.com');
+  let response = await UI.authorization('https://h5.17k.com/passport', 'https://17k.com');
   // 判断是否已登录
   if (response && response.indexOf('accessToken=') !== -1) {
     await Storage.put('cookie', response);

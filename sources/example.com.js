@@ -231,13 +231,13 @@ async function authorization() {
 
     // 接口登录
     {
-        let response = await UI.authorization(1, {});
+        let response = await UI.authorization({});
         // 判断是否已登录, 并保存相关信息
     }
 
     // 网页登录
     {
-        let response = await UI.authorization(0, '登录链接', 'cookies 域名', {});
+        let response = await UI.authorization('登录链接', 'cookies 域名', {});
         // 判断是否已登录, 并保存相关信息
     }
     return false;
