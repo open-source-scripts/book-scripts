@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name          番茄小说网
 // @domain        fanqienovel.com
-// @version       1.0.3
+// @version       1.0.4
 // @icon          https://p1-tt.byteimg.com/origin/novel-static/a3621391ca2e537045168afda6722ee9
 // @supportURL    https://github.com/open-book-source/booksource/issues
 // @function      categories
@@ -18,7 +18,7 @@ function _convertStatus(status) {
 // 搜索
 async function search(keyword, opaque) {
   let offset = opaque ? opaque.offset : 0;
-  let response = await fetch(`https://novel.snssdk.com/api/novel/channel/homepage/search/search/v1/?device_platform=android&parent_enterfrom=novel_channel_search.tab.&offset=${offset}&aid=1967&q=${keyword}`)
+  let response = await fetch(`https://api5-normal-lf.fqnovel.com/reading/bookapi/search/page/v/?query=${keyword}&aid=1967&channel=0&os_version=0&device_type=0&device_platform=0&iid=466614321180296&passback=${offset}&version_code=999`)
   if (response.status !== 200) {
     return {
       code: response.status,
@@ -31,18 +31,18 @@ async function search(keyword, opaque) {
   }
   return {
     data: {
-      data: $.data.ret_data.map(e => ({
-        id: e.book_id,
-        name: e.title,
-        author: e.author,
-        intro: e.abstract,
-        cover: e.thumb_url,
-        category: e.category,
+      data: $.data.map(e => ({
+        id: e.book_data[0].book_id,
+        name: e.book_data[0].book_name,
+        author: e.book_data[0].author,
+        intro: e.book_data[0].abstract,
+        cover: e.book_data[0].thumb_url,
+        category: e.book_data[0].category,
         status: _convertStatus(e.creation_status),
       })),
-      hasMore: $.data.has_more,
+      hasMore: $.has_more,
       opaque: {
-        offset: $.data.offset,
+        offset: $.passback,
       },
     },
   };
@@ -50,7 +50,7 @@ async function search(keyword, opaque) {
 
 // 详情
 async function detail(id) {
-  let response = await fetch(`https://novel.snssdk.com/api/novel/book/directory/list/v1?device_platform=android&parent_enterfrom=novel_channel_search.tab.&aid=1967&book_id=${id}`);
+  let response = await fetch(`https://api5-normal-sinfonlineb.fqnovel.com/reading/bookapi/multi-detail/v/?aid=1967&iid=1&version_code=999&book_id=${id}`);
   if (response.status !== 200) {
     return {
       code: response.status,
@@ -61,26 +61,26 @@ async function detail(id) {
   if ($.code !== 0) {
     return { code: 1, message: `${$.message}(${$.code})` };
   }
-  let item = $.data.book_info;
+  let data = $.data[0];
   return {
     data: {
-      id: item.book_id,
-      name: item.book_name,
-      author: item.author,
-      intro: item.abstract,
-      cover: item.thumb_url,
-      words: parseInt(item.word_number),
-      updateTime: item.last_publish_time * 1000,
-      lastChapterName: item.last_chapter_title,
-      category: item.category,
-      status: _convertStatus(item.creation_status),
+      id: data.book_id,
+      name: data.book_name,
+      author: data.author,
+      intro: data.abstract,
+      cover: data.thumb_url,
+      words: parseInt(data.word_number),
+      updateTime: data.last_publish_time * 1000,
+      lastChapterName: data.last_chapter_title,
+      category: data.category,
+      status: _convertStatus(data.creation_status),
     }
   };
 }
 
 // 目录
 async function toc(id) {
-  let response = await fetch(`https://novel.snssdk.com/api/novel/book/directory/list/v1?device_platform=android&parent_enterfrom=novel_channel_search.tab.&aid=1967&book_id=${id}`);
+  let response = await fetch(`https://novel.snssdk.com/api/novel/book/directory/list/v1/?device_platform=android&version_code=600&novel_version=&app_name=news_article&version_name=6.0.0&app_version=6.0.0aid=520&channel=1&device_type=landseer&os_api=25&os_version=10&book_id=${id}`);
   if (response.status !== 200) {
     return {
       code: response.status,
@@ -97,7 +97,7 @@ async function toc(id) {
   let size = 80
   for (let i = 0; i < items.length; i += size) {
     let ids = items.slice(i, i + size).join(",");
-    response = await fetch(`https://novel.snssdk.com/api/novel/book/directory/detail/v1/?device_platform=android&parent_enterfrom=novel_channel_search.tab.&aid=1967&item_ids=${ids}`);
+    response = await fetch(`https://novel.snssdk.com/api/novel/book/directory/detail/v1/?item_ids=${ids}`);
     if (response.status !== 200) {
       return {
         code: response.status,
@@ -126,13 +126,14 @@ async function toc(id) {
 // 章节
 async function chapter(bid, cid) {
   let args = JSON.parse(cid);
-  let response = await fetch(`https://novel.snssdk.com/api/novel/book/reader/full/v1/?device_platform=android&parent_enterfrom=novel_channel_search.tab.&aid=2329&platform_id=1&group_id=${args.gid}&item_id=${args.id}`);
+  let response = await fetch(`https://novel.snssdk.com/api/novel/book/reader/full/v1/?aid=2329&item_id=${args.id}`);
   if (response.status !== 200) {
     return {
       code: response.status,
       message: 'Network error!',
     };
   }
+  console.log(response.data);
   let $ = JSON.parse(response.data)
   if ($.code !== 0) {
     return { code: 1, message: `${$.message}(${$.code})` };
@@ -178,7 +179,7 @@ async function category(categories, opaque) {
   } else {
     typeArg = `gender=${type}`;
   }
-  let response = await fetch(`https://novel.snssdk.com/api/novel/channel/homepage/new_category/book_list/v1/?parent_enterfrom=novel_channel_category.tab.&aid=1967&offset=${offset}&limit=10&category_id=${category}&${typeArg}`)
+  let response = await fetch(`https://novel.snssdk.com/api/novel/channel/homepage/new_category/book_list/v1/?app_version=4.6.0&device_platform=android&aid=1319&app_name=super&parent_enterfrom=novel_channel_category.tab.&channel=ppx_wy_and_gaox_d_5&version_code=460&version_name=4.6.0&word_count=9&genre_type=0&creation_status=9&offset=${offset}&limit=100&category_id=${category}&${typeArg}`)
   if (response.status !== 200) {
     return {
       code: response.status,
