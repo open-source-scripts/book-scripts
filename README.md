@@ -1,10 +1,10 @@
 ## 书源链接🔗
 
-https://github.com/open-book-source/booksource/raw/main/repository.json
+https://github.com/open-source-scripts/booksource/raw/main/repository.json
 
 OR
 
-https://ghproxy.com/https://raw.githubusercontent.com/open-book-source/booksource/main/repository.json
+https://ghproxy.com/https://raw.githubusercontent.com/open-source-scripts/booksource/main/repository.json
 
 
 ## 开发
