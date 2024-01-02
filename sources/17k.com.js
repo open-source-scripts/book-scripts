@@ -2,7 +2,7 @@
 // @name          17K小说网
 // @domain        17k.com
 // @description   一起看小说
-// @version       1.0.1
+// @version       1.0.2
 // @icon          https://www.17k.com/favicon.ico
 // @supportURL    https://github.com/open-book-source/booksource/issues
 // @function      categories
@@ -19,7 +19,9 @@
 // 搜索
 async function search(keyword, opaque) {
   let page = opaque ? opaque.page : 1;
-  let response = await fetch(`https://api.ali.17k.com/v2/book/search?sort_type=0&app_key=4037465544&_access_version=2&cps=0&channel=2&_versions=1070&merchant=17KH5&page=${page}&client_type=1&_filter_data=1&class=0&key=${encodeURI(keyword)}`);
+  let response = await fetch(`https://api.17k.com/v2/book/search?sort_type=0&app_key=4037465544&_access_version=2&cps=0&channel=2&_versions=1070&merchant=17KH5&page=${page}&client_type=1&_filter_data=1&class=0&key=${encodeURI(keyword)}`, {
+    headers: { 'User-Agent': UserAgents.macos }
+  });
   if (response.status !== 200) {
     return {
       code: response.status,
@@ -69,7 +71,9 @@ async function search(keyword, opaque) {
 
 // 详情
 async function detail(id) {
-  let response = await fetch(`https://api.17k.com/book/${id}/split1/merge?iltc=1&cpsOpid=0&_filterData=1&device_id=&channel=0&_versions=1160&merchant=17Kyyb&platform=2&manufacturer=Xiaomi&clientType=1&appKey=4037465544&model=&cpsSource=0&brand=Redmi&youthModel=0`);
+  let response = await fetch(`https://api.17k.com/book/${id}/split1/merge?iltc=1&cpsOpid=0&_filterData=1&device_id=&channel=0&_versions=1160&merchant=17Kyyb&platform=2&manufacturer=Xiaomi&clientType=1&appKey=4037465544&model=&cpsSource=0&brand=Redmi&youthModel=0`, {
+    headers: { 'User-Agent': UserAgents.macos }
+  });
   if (response.status !== 200) {
     return {
       code: response.status,
@@ -105,7 +109,9 @@ async function detail(id) {
 
 // 目录
 async function toc(id) {
-  let response = await fetch(`https://api.17k.com/v2/book/${id}/volumes?app_key=4037465544&price_extend=1&_versions=1070&client_type=2&_filter_data=1&channel=2&merchant=17Khwyysd&_access_version=2&cps=0&book_id=${id}`);
+  let response = await fetch(`https://api.17k.com/v2/book/${id}/volumes?app_key=4037465544&price_extend=1&_versions=1070&client_type=2&_filter_data=1&channel=2&merchant=17Khwyysd&_access_version=2&cps=0&book_id=${id}`, {
+    headers: { 'User-Agent': UserAgents.macos }
+  });
   if (response.status !== 200) {
     return {
       code: response.status,
@@ -143,7 +149,9 @@ async function toc(id) {
 
 // 章节
 async function chapter(bid, cid) {
-  let response = await fetch(`https://www.17k.com/ck/book/${bid}/chapter/${cid}?subAllPrice=1&appKey=2406394919&bid=${bid}&cid=${cid}`);
+  let response = await fetch(`https://www.17k.com/ck/book/${bid}/chapter/${cid}?subAllPrice=1&appKey=2406394919&bid=${bid}&cid=${cid}`, {
+    headers: { 'User-Agent': UserAgents.macos }
+  });
   if (response.status !== 200) {
     return {
       code: response.status,
@@ -176,17 +184,17 @@ const _sub_categories = {
     {
       key: '全部',
       value: 0,
-      child: {children: [{key: '周', value: 1}, {key: '月', value: 2}, {key: '总', value: 3}]}
+      child: { children: [{ key: '周', value: 1 }, { key: '月', value: 2 }, { key: '总', value: 3 }] }
     },
     {
       key: '男生',
       value: 2,
-      child: {children: [{key: '周', value: 1}, {key: '月', value: 2}, {key: '总', value: 3}]}
+      child: { children: [{ key: '周', value: 1 }, { key: '月', value: 2 }, { key: '总', value: 3 }] }
     },
     {
       key: '女生',
       value: 3,
-      child: {children: [{key: '周', value: 1}, {key: '月', value: 2}, {key: '总', value: 3}]}
+      child: { children: [{ key: '周', value: 1 }, { key: '月', value: 2 }, { key: '总', value: 3 }] }
     },
   ]
 };
@@ -196,16 +204,16 @@ function categories() {
   return {
     data: {
       children: [
-        {key: '畅销榜', value: 2, child: _sub_categories},
-        {key: '礼物榜', value: 15, child: _sub_categories},
-        {key: '新书榜', value: 9, child: _sub_categories},
-        {key: '人气榜', value: 10, child: _sub_categories},
-        {key: '完本榜', value: 11, child: _sub_categories},
-        {key: '热评榜', value: 5, child: _sub_categories},
-        {key: '更新榜', value: 6, child: _sub_categories},
-        {key: '推荐票榜', value: 7, child: _sub_categories},
-        {key: '包月书榜', value: 8, child: _sub_categories},
-        {key: '免费书榜', value: 14, child: _sub_categories},
+        { key: '畅销榜', value: 2, child: _sub_categories },
+        { key: '礼物榜', value: 15, child: _sub_categories },
+        { key: '新书榜', value: 9, child: _sub_categories },
+        { key: '人气榜', value: 10, child: _sub_categories },
+        { key: '完本榜', value: 11, child: _sub_categories },
+        { key: '热评榜', value: 5, child: _sub_categories },
+        { key: '更新榜', value: 6, child: _sub_categories },
+        { key: '推荐票榜', value: 7, child: _sub_categories },
+        { key: '包月书榜', value: 8, child: _sub_categories },
+        { key: '免费书榜', value: 14, child: _sub_categories },
       ]
     },
   };
@@ -227,7 +235,9 @@ async function category(categories, opaque) {
     orderTime = categories[2];
   }
   let page = opaque ? opaque.page : 1;
-  let response = await fetch(`https://api.17k.com/book/rank/client?classId=${classId}&orderTime=${orderTime}&orderBy=1&page=${page}&type=${type}&clientType=1&cpsOpid=0&_filterData=1&channel=0&_versions=1070&merchant=17Kyyb&appKey=4037465544&cpsSource=0&platform=2`);
+  let response = await fetch(`https://api.17k.com/book/rank/client?classId=${classId}&orderTime=${orderTime}&orderBy=1&page=${page}&type=${type}&clientType=1&cpsOpid=0&_filterData=1&channel=0&_versions=1070&merchant=17Kyyb&appKey=4037465544&cpsSource=0&platform=2`, {
+    headers: { 'User-Agent': UserAgents.macos }
+  });
   if (response.status !== 200) {
     return {
       code: response.status,
@@ -297,7 +307,7 @@ async function authenticated() {
 // 个人信息
 async function profile() {
   let response = await fetch(`https://api.17k.com/user/mine/merge?access_token=1&accountInfo=1&bindInfo=1&benefitsType=1&cpsOpid=0&_filterData=1&device_id=&channel=0&_versions=1230&merchant=17Khwyysd&platform=2&manufacturer=Xiaomi&clientType=1&width=1080&appKey=4037465544&cpsSource=0&youthModel=0&height=2175`, {
-    headers: {cookie: await Storage.get('cookie')}
+    headers: { 'User-Agent': UserAgents.macos, cookie: await Storage.get('cookie') }
   });
   if (response.status !== 200) {
     return {
@@ -402,7 +412,7 @@ async function action(action) {
 // 获取书架书籍
 async function bookshelf() {
   let response = await fetch(`https://user.17k.com/ck/author/shelf?platform=4&appKey=1351550300`, {
-    headers: {cookie: await Storage.get('cookie')}
+    headers: { 'User-Agent': UserAgents.macos, cookie: await Storage.get('cookie') }
   });
   if (response.status !== 200) {
     return {
