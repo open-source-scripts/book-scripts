@@ -2,7 +2,7 @@
 // @name          17K小说网
 // @domain        17k.com
 // @description   一起看小说
-// @version       1.0.2
+// @version       1.0.3
 // @icon          https://www.17k.com/favicon.ico
 // @supportURL    https://github.com/open-book-source/booksource/issues
 // @function      categories
@@ -149,7 +149,7 @@ async function toc(id) {
 
 // 章节
 async function chapter(bid, cid) {
-  let response = await fetch(`https://www.17k.com/ck/book/${bid}/chapter/${cid}?subAllPrice=1&appKey=2406394919&bid=${bid}&cid=${cid}`, {
+  let response = await fetch(`https://api.17k.com/v2/book/${bid}/chapter/${cid}/content?app_type=8&app_key=4037465544&_versions=979&client_type=1&_filter_data=1&channel=2&merchant=17Khwyysd&_access_version=2&cps=0`, {
     headers: { 'User-Agent': UserAgents.macos }
   });
   if (response.status !== 200) {
@@ -159,22 +159,17 @@ async function chapter(bid, cid) {
     };
   }
   let $ = JSON.parse(response.data)
-  if ($.data.status.id !== 1 && $.data.status.id !== 2) {
-    throw JSON.stringify({
-      code: 404,
-      message: `${$.data.status.name}`
-    });
-  } else if ($.data.isVIP.id === 1) {
-    // 未购买返回403和自动订阅地址
-    if ($.data.userReadInfo.free !== 1) throw JSON.stringify({
-      code: 403,
-      message: `https://h5.17k.com/chapter/${bid}/${cid}.html`
-    });
+  if ($.status.code !== 0) {
+    return {
+      code: 1,
+      message: `${$.status.msg}(${$.status.code})`,
+    };
   }
+
   return {
     data: {
       finalUrl: response.finalUrl,
-      body: $.data.content[0].text,
+      body: $.data.content,
     },
   };
 }
