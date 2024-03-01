@@ -32,13 +32,13 @@ declare var Date: DateConstructor;
  * 用户代理
  */
 interface UserAgents {
-    /** 
+    /**
      * Android 用户代理: Mozilla/5.0 (Android 12; Mobile; rv:97.0) Gecko/97.0 Firefox/97.0
      */
     readonly android: string;
 
-    /** 
-     * iphon 用户代理: Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148
+    /**
+     * iphone 用户代理: Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148
      */
     readonly iphone: string;
 
@@ -112,7 +112,7 @@ interface RequestOptions {
 
     /**
      * 返回类型
-     * 
+     *
      * - text 文本类型 👈(默认值)
      * - bytes 二进制类型
      */
@@ -180,7 +180,7 @@ interface Codec {
 
     /**
      * 解码
-     * @param text 待解码的数据
+     * @param data 待解码的数据
      * @param charset 字符集, 默认为 utf8
      */
     decode(data: Uint8Array, charset?: string): Promise<string>;
@@ -207,7 +207,7 @@ interface Node {
      * 查找第一个与 selectors 表达式匹配的节点
      * @param selectors css 表达式
      */
-    querySelector(selectors: string): Element?;
+    querySelector(selectors: string): Element;
 
     /**
      * 查找与 selectors 表达式匹配的节点
@@ -222,12 +222,11 @@ interface Node {
     queryXpath(xpath: string): Element[];
 
     /**
-     * 移除该节点
+     * 获取属性值
+     * @param name
      */
-    remove();
-}
+    getAttribute(name: string): string
 
-interface Element extends Node {
     /**
      * 获取当前节点下的文本
      */
@@ -239,18 +238,25 @@ interface Element extends Node {
     ownText: string;
 
     /**
-     * 该元素的 HTML 文本
-     */
-    innerHtml: string;
-
-    /**
      * 该 DOM 元素及其后代的 HTML 文本
      */
     outerHtml: string;
+
+    /**
+     * 移除该节点
+     */
+    remove();
+}
+
+interface Element extends Node {
+    /**
+     * 该元素的 HTML 文本
+     */
+    innerHtml: string;
 }
 
 /**
- * 
+ *
  */
 interface Document extends Node {
 
@@ -303,7 +309,7 @@ interface Uri {
 
     /**
      * 将 reference 解析为相对于当前的 Uri
-     * @param reference 
+     * @param reference
      */
     resolve(reference: string): Uri;
 
@@ -345,18 +351,73 @@ interface UI {
     prompt(text: string): Promise<null | string>;
 
     /**
-     * 网页类型认证页面
-     * @param url 验证地址
-     * @param domain 获取 cookies 域名
-     * @param params 请求参数: {cookies: [...], userAgent: ''}
+     * 配置扩展
+     * @param inputs 配置参数
      */
-    authorization(url: string, domain: string, params?: object): Promise<null | object>;
-
-     /**
-     * 输入类型认证页面
-     * @param params 页面参数
-     */ 
-     authorization(params: object): Promise<null | object>;
+    configure(inputs: object): Promise<null | object>;
 }
 
 declare var UI: UI;
+
+/**
+ * 未配置错误
+ */
+interface UnconfiguredError {
+    message?: string;
+    stack?: string;
+}
+
+declare var UnconfiguredError: {
+    new(message?: string): UnconfiguredError;
+}
+
+/**
+ * 功能未实现错误
+ */
+interface UnimplementedFunctionError {
+    functionName: string;
+    message?: string;
+    stack?: string;
+}
+
+declare var UnimplementedFunctionError: {
+    new(functionName: string, message?: string): UnimplementedFunctionError;
+}
+
+/**
+ * 功能未支持错误
+ */
+interface UnsupportedFunctionError {
+    functionName: string;
+    message?: string;
+    stack?: string;
+}
+
+declare var UnsupportedFunctionError: {
+    new(functionName: string, message?: string): UnimplementedFunctionError;
+}
+
+/**
+ * 网络错误
+ */
+interface NetworkError {
+    status?: number;
+    message?: string;
+    stack?: string;
+}
+
+declare var NetworkError: {
+    new(status?: number, message?: string): NetworkError;
+}
+
+/**
+ * 源错误
+ */
+interface SourceError {
+    message?: string;
+    stack?: string;
+}
+
+declare var SourceError: {
+    new(message?: string): SourceError;
+}

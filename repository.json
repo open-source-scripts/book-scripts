@@ -1,6 +1,6 @@
 {
   "author": "Open Book Source",
-  "homepage": "https://github.com/open-book-source/booksource",
+  "homepage": "https://github.com/open-source-scripts/book-scripts",
   "sources": [
     {
       "format": "javascript",
@@ -8,14 +8,14 @@
       "domain": "17k.com",
       "icon": "https://www.17k.com/favicon.ico",
       "description": "一起看小说",
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "format": "javascript",
       "name": "番茄小说网",
       "domain": "fanqienovel.com",
       "icon": "https://p1-tt.byteimg.com/origin/novel-static/a3621391ca2e537045168afda6722ee9",
-      "version": "1.0.4"
+      "version": "1.0.5"
     },
     {
       "format": "javascript",
@@ -23,7 +23,7 @@
       "domain": "zongheng.com",
       "icon": "https://www.zongheng.com/favicon.ico",
       "description": "上纵横小说, 看大神之作",
-      "version": "1.0.0"
+      "version": "1.0.1"
     }
   ]
 }
